@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import './ProductForm.css';
+import '../styles/ProductForm.css';
 
 const categoryOptions = {
   Wardrobe: ['2 Door', '3 Door', 'Sliding', 'Mirror Wardrobe'],
