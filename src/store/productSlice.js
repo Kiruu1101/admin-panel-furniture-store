@@ -1,48 +1,68 @@
+// src/features/products/productSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { db } from '../firebase';
 import {
-  collection,
-  addDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
-  serverTimestamp
-} from 'firebase/firestore';
+  ref,
+  push,
+  set,
+  update,
+  remove,
+  get,
+  child
+} from 'firebase/database';
 
-export const addProduct = createAsyncThunk('products/addProduct', async (product) => {
-  const docRef = await addDoc(collection(db, 'products'), {
-    ...product,
-    createdAt: serverTimestamp()
-  });
-  return { id: docRef.id, ...product };
+// Seed default products
+export async function seedDefaultProducts() {
+  const defaults = [
+    { name: 'King Size Bed', description: 'Comfortable king bed', price: 25000, quantity: 5, category: 'Bed', subCategory: 'King', imageUrl: 'URL1' },
+    { name: 'Queen Bed', description: 'Elegant queen bed', price: 20000, quantity: 4, category: 'Bed', subCategory: 'Queen', imageUrl: 'URL2' },
+    { name: 'Single Bed', description: 'Compact single bed', price: 12000, quantity: 10, category: 'Bed', subCategory: 'Single', imageUrl: 'URL3' },
+    { name: '2 Door Wardrobe', description: 'Spacious wardrobe', price: 18000, quantity: 3, category: 'Wardrobe', subCategory: '2 Door', imageUrl: 'URL4' },
+    { name: '3 Door Wardrobe', description: 'Large wardrobe', price: 22000, quantity: 2, category: 'Wardrobe', subCategory: '3 Door', imageUrl: 'URL5' },
+    { name: 'Sliding Wardrobe', description: 'Stylish sliding wardrobe', price: 24000, quantity: 2, category: 'Wardrobe', subCategory: 'Sliding', imageUrl: 'URL6' },
+    { name: 'Mirror Wardrobe', description: 'Wardrobe with mirror', price: 26000, quantity: 1, category: 'Wardrobe', subCategory: 'Mirror Wardrobe', imageUrl: 'URL7' },
+    { name: 'Dining Table', description: 'Family dining table', price: 15000, quantity: 3, category: 'Table', subCategory: 'Dining Table', imageUrl: 'URL8' },
+    { name: 'Coffee Table', description: 'Stylish coffee table', price: 8000, quantity: 5, category: 'Table', subCategory: 'Coffee Table', imageUrl: 'URL9' },
+    { name: 'Study Table', description: 'Functional study table', price: 9000, quantity: 4, category: 'Table', subCategory: 'Study Table', imageUrl: 'URL10' }
+  ];
+
+  for (let p of defaults) {
+    const newRef = push(ref(db, 'products'));
+    await set(newRef, p);
+  }
+}
+
+// Fetch products
+export const fetchProducts = createAsyncThunk('products/fetch', async () => {
+  const snapshot = await get(child(ref(db), 'products'));
+  const data = snapshot.val();
+  if (!data) return [];
+  return Object.entries(data).map(([id, value]) => ({ id, ...value }));
 });
 
-export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
-  const snapshot = await getDocs(collection(db, 'products'));
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+// Add product
+export const addProduct = createAsyncThunk('products/add', async (product) => {
+  const newRef = push(ref(db, 'products'));
+  await set(newRef, product);
+  return { id: newRef.key, ...product };
 });
 
-export const updateProduct = createAsyncThunk('products/updateProduct', async ({ id, updates }) => {
-  const docRef = doc(db, 'products', id);
-  await updateDoc(docRef, updates);
+// Update product
+export const updateProduct = createAsyncThunk('products/update', async ({ id, updates }) => {
+  await update(ref(db, `products/${id}`), updates);
   return { id, updates };
 });
 
-export const deleteProduct = createAsyncThunk('products/deleteProduct', async (id) => {
-  await deleteDoc(doc(db, 'products', id));
+// Delete product
+export const deleteProduct = createAsyncThunk('products/delete', async (id) => {
+  await remove(ref(db, `products/${id}`));
   return id;
 });
 
-
-
+// Slice
 const productSlice = createSlice({
   name: 'products',
-  initialState: {
-    items: [],
-    loading: false,
-    error: null,
-  },
+  initialState: { items: [], loading: false, error: null },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -61,13 +81,13 @@ const productSlice = createSlice({
         state.items.push(action.payload);
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
-        const index = state.items.findIndex((item) => item.id === action.payload.id);
+        const index = state.items.findIndex(item => item.id === action.payload.id);
         if (index !== -1) {
           state.items[index] = { ...state.items[index], ...action.payload.updates };
         }
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.items = state.items.filter((item) => item.id !== action.payload);
+        state.items = state.items.filter(item => item.id !== action.payload);
       });
   }
 });

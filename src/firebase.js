@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";   // ✅ Realtime Database
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
@@ -15,6 +15,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const db = getFirestore(app);       // Firestore (database)
-export const auth = getAuth(app);          // Firebase Auth (admin login)
-export const storage = getStorage(app);    // Firebase Storage (product images)
+export const db = getDatabase(app);         // ✅ Realtime Database
+export const auth = getAuth(app);           // Firebase Auth
+export const storage = getStorage(app);     // Firebase Storage

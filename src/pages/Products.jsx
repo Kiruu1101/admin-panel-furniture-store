@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import ProductList from '../components/ProductList';
 import ProductForm from '../components/ProductForm';
+import { useDispatch } from 'react-redux';
+import { fetchProducts } from '../store/productSlice';
 
 export default function Products() {
   const [show, setShow] = useState(false);
+  const dispatch = useDispatch();
 
-  
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between mb-3">
-        <h3>Manage Products</h3>
-        <button className="btn btn-primary" onClick={() => setShow(true)}>
+      <button className="btn btn-primary" onClick={() => setShow(true)}>
           Add New Product
         </button>
+      <div className="d-flex justify-content-between mb-3">
+        
+        <h3>Manage Products</h3>
+        
       </div>
 
       <ProductList />

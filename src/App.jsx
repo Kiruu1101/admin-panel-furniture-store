@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
@@ -10,7 +10,8 @@ import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Orders from './pages/Orders';
 import ProtectedRoute from './components/ProtectedRoute';
-import AdminLayout from './layouts/AdminLayout';
+import Sidebar from './components/Sidebar';
+
 
 export default function App() {
   const dispatch = useDispatch();
@@ -30,13 +31,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+        <Route path="/" element={!user ? <Login /> : <Navigate to="/dashboard"/>} />
 
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute isAuthenticated={!!user}>
-              <AdminLayout />
+              <Sidebar />
             </ProtectedRoute>
           }
         >
