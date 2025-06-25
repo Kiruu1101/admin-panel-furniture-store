@@ -178,7 +178,7 @@ export default function ProductForm({ closeModal, product = null, editable = fal
                   placeholder="Comma-separated subcategories (e.g. 2 Seater, 3 Seater)"
                 />
                 <button className="btn btn-sm btn-success" onClick={handleAddCategory}>
-                  ✅ Save Category
+                   Save Category
                 </button>
               </div>
             )}
