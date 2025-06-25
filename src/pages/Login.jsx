@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../store/authSlice';
+import FullPageLoader from '../components/FullPageLoader';
+import '../styles/Login.css'
 
 function Login() {
   const dispatch = useDispatch();
@@ -14,6 +16,7 @@ function Login() {
     dispatch(login({ email, password }));
   };
 
+  if (status === 'loading') return <FullPageLoader message='Logging you in...'/>;
   return (
     <div className="login-page">
       <form className="login-form" onSubmit={handleSubmit}>

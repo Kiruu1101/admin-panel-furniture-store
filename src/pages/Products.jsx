@@ -14,13 +14,13 @@ export default function Products() {
 
   return (
     <div className="container mt-4">
-      <button className="btn btn-primary" onClick={() => setShow(true)}>
+      <button className="btn btn-warning" onClick={() => setShow(true)}>
           Add New Product
         </button>
       <div className="d-flex justify-content-between mb-3">
-        
-        <h3>Manage Products</h3>
-        
+
+        <h3 className="fw-bold text-primary border-bottom pb-2 mb-3 text-center">Manage Products</h3>
+       
       </div>
 
       <ProductList />

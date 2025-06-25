@@ -1,35 +1,46 @@
-// src/components/ProductForm.jsx
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { addProduct, updateProduct } from '../store/productSlice';
-
-const categoryOptions = {
-  Wardrobe: ['2 Door', '3 Door', 'Sliding', 'Mirror Wardrobe'],
-  Bed: ['Single', 'Double', 'Queen', 'King'],
-  Table: ['Study Table', 'Dining Table', 'Coffee Table'],
-  Other: ['Other']
-};
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addProduct,
+  updateProduct,
+} from '../store/productSlice';
+import {
+  fetchCategories,
+  addOrUpdateCategory,
+} from '../store/categorySlice';
 
 export default function ProductForm({ closeModal, product = null, editable = false }) {
   const dispatch = useDispatch();
+  const categories = useSelector((state) => state.categories.items||{});
 
-  const initialState = {
+  const [form, setForm] = useState({
     name: '',
     description: '',
     price: '',
     quantity: '',
     category: '',
     subCategory: '',
-    imageUrl: ''
-  };
+    imageUrl: '',
+  });
 
-  const [form, setForm] = useState(initialState);
+
+  const [showCategoryEditor, setShowCategoryEditor] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
+  const [newSubCategories, setNewSubCategories] = useState('');
 
   useEffect(() => {
-    if (editable && product) {
-      setForm(product);
-    }
-  }, [editable, product]);
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+  if (editable && product) {
+    setForm((prev) => ({
+      ...prev,
+      ...product,
+    }));
+  }
+}, [editable, product]);
+
 
   const handle = (e) => {
     const { name, value } = e.target;
@@ -46,9 +57,29 @@ export default function ProductForm({ closeModal, product = null, editable = fal
     closeModal();
   };
 
+  const handleAddCategory = (e) => {
+    e.preventDefault();
+    const cleanCategory = newCategory.trim();
+    const cleanSubcategories = newSubCategories
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s);
+
+    if (!cleanCategory || cleanSubcategories.length === 0) return;
+
+    dispatch(addOrUpdateCategory({ category: cleanCategory, subcategories: cleanSubcategories }))
+      .then(() => {
+        dispatch(fetchCategories());
+        setNewCategory('');
+        setNewSubCategories('');
+        setShowCategoryEditor(false);
+      });
+  };
+
+
   return (
     <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content p-3">
           <button className="btn-close float-end" onClick={closeModal} />
           <form onSubmit={onSubmit} className="mt-4">
@@ -86,20 +117,33 @@ export default function ProductForm({ closeModal, product = null, editable = fal
               placeholder="Quantity"
               required
             />
-            <select
-              name="category"
-              value={form.category}
-              onChange={handle}
-              className="form-control mb-2"
-              required
-            >
-              <option value="">Category…</option>
-              {Object.keys(categoryOptions).map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <select
+                name="category"
+                value={form.category}
+                onChange={handle}
+                className="form-control me-2"
+                required
+              >
+                <option value="">Select Category…</option>
+                {Object.keys(categories).length === 0 ? (
+                  <option disabled>No categories available</option>
+                ) : (
+                  Object.keys(categories).map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))
+                )}
+              </select>
+              <button
+                type="button"
+                className="btn btn-outline-primary"
+                onClick={() => setShowCategoryEditor(!showCategoryEditor)}
+              >
+                {showCategoryEditor ? 'Cancel' : '➕ Add Category'}
+              </button>
+            </div>
+
             {form.category && (
               <select
                 name="subCategory"
@@ -108,14 +152,38 @@ export default function ProductForm({ closeModal, product = null, editable = fal
                 className="form-control mb-2"
                 required
               >
-                <option value="">SubCategory…</option>
-                {categoryOptions[form.category].map((sub) => (
+                <option value="">Select SubCategory…</option>
+                {categories[form.category]?.map((sub) => (
                   <option key={sub} value={sub}>
                     {sub}
                   </option>
                 ))}
               </select>
             )}
+
+            {showCategoryEditor && (
+              <div className="border p-3 mb-3 bg-light">
+                <h6 className="fw-bold">Add / Update Category</h6>
+                <input
+                  type="text"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="form-control mb-2"
+                  placeholder="Category name (e.g. Sofa)"
+                />
+                <textarea
+                  value={newSubCategories}
+                  onChange={(e) => setNewSubCategories(e.target.value)}
+                  className="form-control mb-2"
+                  placeholder="Comma-separated subcategories (e.g. 2 Seater, 3 Seater)"
+                />
+                <button className="btn btn-sm btn-success" onClick={handleAddCategory}>
+                  ✅ Save Category
+                </button>
+              </div>
+            )}
+
+
             <input
               name="imageUrl"
               value={form.imageUrl}
@@ -125,7 +193,7 @@ export default function ProductForm({ closeModal, product = null, editable = fal
               required
             />
             <button type="submit" className="btn btn-success w-100">
-              {editable ? 'Update' : 'Add'}
+              {editable ? 'Update Product' : 'Add Product'}
             </button>
           </form>
         </div>

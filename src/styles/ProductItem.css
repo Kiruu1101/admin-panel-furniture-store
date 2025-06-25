@@ -1,0 +1,44 @@
+.out-of-stock {
+  position: relative;
+}
+
+.out-of-stock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+  z-index: 1;
+  border-radius: 5px;
+}
+.card {
+  max-width: 300px;
+  margin: 10px auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.out-of-stock::after {
+  content: "Out of Stock";
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  background-color: rgba(255, 0, 0, 0.511);
+  color: white;
+  padding: 5px 12px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.card-body {
+  position: relative;
+  z-index: 3; /* Ensure buttons and text stay on top */
+}

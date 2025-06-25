@@ -1,0 +1,74 @@
+.admin-orders-container {
+  padding: 2rem;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+}
+
+.admin-order-card {
+  background: #ffffff;
+  border-left: 6px solid #0d6efd;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.admin-order-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.admin-order-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.admin-order-header p {
+  margin: 0.4rem 0;
+}
+
+.admin-order-body ul {
+  padding: 0;
+  list-style: none;
+}
+
+.admin-order-body li {
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.status-select {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-left: 8px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.status-Placed {
+  background-color: #0d6efd;
+}
+
+.status-Shipped {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.status-Delivered {
+  background-color: #198754;
+}
+
+.status-Cancelled {
+  background-color: #dc3545;
+}
