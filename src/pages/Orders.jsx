@@ -21,7 +21,9 @@ export default function Orders() {
               orders.push({ id: orderId, userId, ...order });
             });
           });
-          setAllOrders(orders.reverse());
+          setAllOrders(
+            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          );
         } else {
           setAllOrders([]);
         }
